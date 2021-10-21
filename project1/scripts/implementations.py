@@ -57,6 +57,15 @@ def delete_outliers(x, threshold):
     legit_ids = np.where(bool_vect)
     clean_x = x[legit_ids, :]
     return clean_x, legit_ids
+
+def polynomial_embedding(x, degree=2):
+    if degree==0 or degree==1 :
+        return x
+    res = x
+    for i in range(1, degree):
+        pows = (i+1)*np.ones((x.shape[1],))
+        res = np.concatenate((res, np.power(x, pows)), axis=1)
+    return res
     
             
         
