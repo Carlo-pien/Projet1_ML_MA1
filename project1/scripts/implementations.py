@@ -58,8 +58,10 @@ def delete_zero_var_features(x):
     return np.squeeze(x[:, to_keep], axis=1)
 
 def delete_outliers(x, threshold):
+    #bool_vect = np.all(x>threshold, axis=1)
     bool_vect = np.all(x>threshold, axis=1)
     legit_ids = np.where(bool_vect)
+    print(len(legit_ids))
     clean_x = x[legit_ids, :]
     return clean_x, legit_ids
 
@@ -104,7 +106,44 @@ def PCA(X, threshold=.9):
     Y_ = np.squeeze(Y[:, PC_ids], axis=1)
     P_ = np.squeeze(P[:, PC_ids], axis=1)
     return Y_, P, PC_ids
+
+def divide_in_groups(x):
     
+    group00 = np.where(x[:, 0]==-999)[0]
+    group01 = np.where(x[:, 0]!=-999)[0]
+    group1 = np.where(x[:, 22]==0)[0]
+    group2 = np.where(x[:, 22]==1)[0]
+    group3 = np.where(x[:, 22]>1)[0]
+    
+    ids_01 = np.intersect1d(group00, group1)
+    ids_02 = np.intersect1d(group00, group2)
+    ids_03 = np.intersect1d(group00, group3)
+    ids_11 = np.intersect1d(group01, group1)
+    ids_12 = np.intersect1d(group01, group2)
+    ids_13 = np.intersect1d(group01, group3)
+    ids = (ids_01, ids_02, ids_03, ids_11, ids_12, ids_13)
+    
+    x01 = x[ids_01, :]
+    x02 = x[ids_02, :]
+    x03 = x[ids_03, :]
+    x11 = x[ids_11, :]
+    x12 = x[ids_12, :]
+    x13 = x[ids_13, :]
+    
+    delete_from_gr1 = [4, 5, 6, 12, 23, 24, 25, 26, 27, 28]
+    delete_from_gr2 = [4, 5, 6, 12, 25, 26, 27, 28]
+    
+    x01 = np.delete(x01, delete_from_gr1, axis=1)
+    x11 = np.delete(x11, delete_from_gr1, axis=1)
+    x02 = np.delete(x02, delete_from_gr2, axis=1)
+    x12 = np.delete(x12, delete_from_gr2, axis=1)
+    x01 = np.delete(x01, 0, axis=1)
+    x02 = np.delete(x02, 0, axis=1)
+    x03 = np.delete(x03, 0, axis=1)
+    
+    data = (x01, x02, x03, x11, x12, x13)
+    
+    return data, ids
     
     
             
