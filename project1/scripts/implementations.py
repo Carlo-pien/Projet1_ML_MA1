@@ -50,7 +50,7 @@ def decorrelate_features(x, threshold=.9):
             index = int(indices[i, 1])
             to_delete = np.concatenate([to_delete, np.array([index])])
     to_delete.astype(np.int64)
-    return np.delete(x, to_delete, axis=1)
+    return np.delete(x, to_delete, axis=1), to_delete
 
 def delete_outliers(x, threshold):
     bool_vect = np.all(x>threshold, axis=1)
