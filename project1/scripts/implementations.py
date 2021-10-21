@@ -52,6 +52,11 @@ def decorrelate_features(x, threshold=.9):
     to_delete.astype(np.int64)
     return np.delete(x, to_delete, axis=1), to_delete
 
+def delete_zero_var_features(x):
+    var = np.var(x, axis=0)
+    to_keep = np.nonzero(var)
+    return np.squeeze(x[:, to_keep], axis=1)
+
 def delete_outliers(x, threshold):
     bool_vect = np.all(x>threshold, axis=1)
     legit_ids = np.where(bool_vect)
