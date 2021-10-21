@@ -71,6 +71,41 @@ def polynomial_embedding(x, degree=2):
         pows = (i+1)*np.ones((x.shape[1],))
         res = np.concatenate((res, np.power(x, pows)), axis=1)
     return res
+
+def standardize(x):
+    m = np.mean(x, axis=0)
+    std = np.std(x, axis=0)
+    return (x-m)/std
+
+def PCA(X, threshold=.9):
+    """returns the data projected on the principal components vectors, and these principal components.
+    
+    arguments :
+    X : np.array, the input data matrix
+    threshold : float \in [0, 1], the desired  percentage of variance explained by the PCs
+    
+    returned values :
+    PCX : transformed and reduced data
+    Y : rotation matrix
+    ids : kept components"""
+    
+    X = standardize(X)
+    
+    cov_mat = np.cov(X, rowvar=False)
+    eig = np.linalg.eigh(cov_mat)
+    eigvals = np.flip(eig[0])
+    D = np.diag(eigvals)
+    P = eig[1]
+    Y = X@P
+
+    eigsum = np.cumsum(eigvals)
+    t = threshold * eigsum[-1]
+    PC_ids = np.where(eigsum<t)
+    Y_ = np.squeeze(Y[:, PC_ids], axis=1)
+    P_ = np.squeeze(P[:, PC_ids], axis=1)
+    return Y_, P, PC_ids
+    
+    
     
             
         
